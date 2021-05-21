@@ -39,36 +39,42 @@ def convert_from_24_hour_clock(time):
         return str(int(hour) - 12) + ":" + minute + " PM"
 
 
+def format_time(time, days_passed, day_of_week):
+    new_day = add_days(day_of_week, days_passed)
+
+    if days_passed == 0:
+        return "{time}, {new_day}".format(time=time, new_day=new_day.capitalize())
+    elif days_passed == 1:
+        return "{time}, {new_day} (next day)".format(
+            time=time, new_day=new_day.capitalize()
+        )
+    else:
+        return "{time}, {new_day} ({days_passed} days later)".format(
+            time=time, new_day=new_day.capitalize(), days_passed=days_passed
+        )
+
+
 def add_time(start, duration, start_date=None):
-    time, period = start.split()
-    days = 0
-
-    current_hour, current_mins = time.split(":")
-
+    current_hour, current_mins = convert_to_24_hour_clock(start).split(":")
     hours_to_add, mins_to_add = duration.split(":")
 
     extra_hour, new_mins = divmod(int(current_mins) + int(mins_to_add), 60)
 
-    period_changes, new_hour = divmod(
-        int(current_hour) + int(hours_to_add) + extra_hour, 12
-    )
+    cycles, new_hour = divmod(int(current_hour) + int(hours_to_add) + extra_hour, 24)
 
-    if period == "PM" and (period_changes % 2) == 1:
-        days += 1 + period_changes // 2
+    if new_mins < 10:
+        new_mins = "0" + str(new_mins)
+
+    new_time = convert_from_24_hour_clock(str(new_hour) + ":" + str(new_mins))
+
+    days_passed = cycles
+
+    if start_date == None:
+        if days_passed == 0:
+            return new_time
+        elif days_passed == 1:
+            return "{time} (next day)".format(time=new_time)
+        else:
+            return "{time} ({days} days later)".format(time=new_time, days=days_passed)
     else:
-        days += period_changes // 2
-
-    if (period_changes % 2) != 0:
-        period = "PM" if period == "AM" else "AM"
-
-    print(new_hour, new_mins, period)
-
-    print(period_changes, days)
-
-    new_time = ""
-
-    return new_time
-
-
-if __name__ == "__main__":
-    print(add_time("12:00 PM", "12:00"))
+        return format_time(new_time, days_passed, start_date)
