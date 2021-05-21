@@ -60,14 +60,14 @@ def add_time(start, duration, start_date=None):
 
     extra_hour, new_mins = divmod(int(current_mins) + int(mins_to_add), 60)
 
-    cycles, new_hour = divmod(int(current_hour) + int(hours_to_add) + extra_hour, 24)
+    days_passed, new_hour = divmod(
+        int(current_hour) + int(hours_to_add) + extra_hour, 24
+    )
 
     if new_mins < 10:
         new_mins = "0" + str(new_mins)
 
     new_time = convert_from_24_hour_clock(str(new_hour) + ":" + str(new_mins))
-
-    days_passed = cycles
 
     if start_date == None:
         if days_passed == 0:
