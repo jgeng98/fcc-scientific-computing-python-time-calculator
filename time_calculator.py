@@ -12,6 +12,33 @@ def add_days(day_of_week, days):
     return weekdays[(weekdays.index(day_of_week.lower()) + days) % 7]
 
 
+def convert_to_24_hour_clock(time):
+    time, period = time.split()
+    hour, minute = time.split(":")
+
+    if period == "AM" and hour != "12":
+        return time
+    elif period == "AM" and hour == "12":
+        return "00" + ":" + minute
+    elif period == "PM" and hour == "12":
+        return time
+    else:
+        return str(int(hour) + 12) + ":" + minute
+
+
+def convert_from_24_hour_clock(time):
+    hour, minute = time.split(":")
+
+    if int(hour) == 0:
+        return "12:" + minute + " AM"
+    elif int(hour) <= 11:
+        return time + " AM"
+    elif int(hour) == 12:
+        return time + " PM"
+    else:
+        return str(int(hour) - 12) + ":" + minute + " PM"
+
+
 def add_time(start, duration, start_date=None):
     time, period = start.split()
     days = 0
